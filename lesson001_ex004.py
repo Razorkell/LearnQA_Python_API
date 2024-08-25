@@ -12,7 +12,3 @@ class TestApi:
     # get text request
     def get_req_text(self):
         return requests.get(self._page).text
-
-
-site_001 = TestApi("https://playground.learnqa.ru/api/get_text")
-print(site_001.get_req_text())
