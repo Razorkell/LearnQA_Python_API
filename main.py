@@ -1,4 +1,5 @@
-import lesson001_ex003
+from lesson01 import lesson001_ex003
+
 # import lesson001_ex004
 
 # run ex3
