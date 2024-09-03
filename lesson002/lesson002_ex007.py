@@ -31,13 +31,16 @@ class TestApi:
             text = TestApi.req(self, method, option).text
             return json.loads(text)
         except:
-            return {'Error': 'No text'}
+            return {'Error': 'No content'}
 
     # answer
 def check_answer(text_pair):
     for key in text_pair:
         if key == 'Error':
-            return f"Error: {text_pair[key]}"
+            if text_pair[key] == 'No content':
+                return f"Invalid request"
+            else:
+                return f"Error: {text_pair[key]}"
         elif key == 'success':
             if text_pair[key] == '!':
                 return f"Real method and request method should be equal, success response '{text_pair[key]}'"
