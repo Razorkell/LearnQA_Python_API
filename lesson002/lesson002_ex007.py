@@ -1,5 +1,3 @@
-from json import JSONDecodeError
-
 import requests
 import json
 
@@ -13,27 +11,28 @@ class TestApi:
         print(self.__page)
 
     # request
-    def req(self, method = None, option = None):
+    def req(self, method=None, option=None):
         if method is None:
             print(f"Please enter method")
         else:
             if option is None:
-                return requests.request(method = method, url = self.__page)
+                return requests.request(method=method, url=self.__page)
             else:
                 if method == 'GET':
-                    return requests.request(method = method, url = self.__page, params = option)
+                    return requests.request(method=method, url=self.__page, params=option)
                 else:
-                    return requests.request(method = method, url = self.__page, data = option)
+                    return requests.request(method=method, url=self.__page, data=option)
 
     # request_json
-    def req_json(self, method = None, option = None):
+    def req_json(self, method=None, option=None):
         try:
             text = TestApi.req(self, method, option).text
             return json.loads(text)
         except:
             return {'Error': 'No content'}
 
-    # answer
+
+# answer
 def check_answer(text_pair):
     for key in text_pair:
         if key == 'Error':
@@ -49,21 +48,22 @@ def check_answer(text_pair):
         else:
             return f"Unexpected answer:"
 
+
 url001 = "https://playground.learnqa.ru/ajax/api/compare_query_type"
-methods001 = ['GET','POST','PUT','DELETE']
+methods001 = ['GET', 'POST', 'PUT', 'DELETE']
 req001 = TestApi(url001)
 
 
-#1
+# 1
 print(f"1) {check_answer(req001.req_json('GET'))};")
 
-#2
+# 2
 print(f"2) {check_answer(req001.req_json('HEAD'))};")
 
-#3
-print(f"3) {check_answer(req001.req_json('GET',{'method': 'GET'}))};")
+# 3
+print(f"3) {check_answer(req001.req_json('GET', {'method': 'GET'}))};")
 
-#4
+# 4
 invalid_eq_list = []
 invalid_not_eq_list = []
 
