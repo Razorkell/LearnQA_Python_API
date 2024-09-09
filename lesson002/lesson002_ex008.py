@@ -40,7 +40,7 @@ class LongTimeJob:
 
     # GET request
     def get_req(self, **kwargs):
-        return requests.get(url = self.__page, **kwargs)
+        return requests.get(url=self.__page, **kwargs)
 
     # get token
     def get_token(self):
@@ -61,7 +61,7 @@ class LongTimeJob:
         print(f"Status = {self.__status}; Result = {self.__result}; Error = {self.__error}.")
 
     # get status, error, result using token
-    def get_status(self, token = True):
+    def get_status(self, token=True):
         if token:
             temp_req = requests.get(self.__page, params={"token": self.__token})
         else:
@@ -97,7 +97,7 @@ job1 = LongTimeJob(url1)
 # 1) Get token and start job
 job1.get_token()
 start_time = datetime.datetime.now()
-end_time = start_time + datetime.timedelta(seconds = job1.seconds())
+end_time = start_time + datetime.timedelta(seconds=job1.seconds())
 # job1.get_status(False)
 # job1.info()
 print(f"1) Job started."
