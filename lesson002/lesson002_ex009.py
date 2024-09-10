@@ -99,7 +99,7 @@ class TestApi:
         invalid_password = "You are NOT authorized"
 
         if "cookie" not in __cookie or __cookie is None:
-            __result = {"result": 0, "text": f"No cookie for check"}
+            __result = {"result": 0, "text": f"No cookie for checking"}
         else:
             if __url is None:  # if url for check auth сookie not unique
                 __url = self.__page
@@ -112,7 +112,9 @@ class TestApi:
                 __result = {"result": 0, "text": f"'{__cookie.get("password")}' "
                                                  f"is invalid for '{__cookie.get("login")}'"}
             else:
-                __result = {"result": -1, "text": f"Invalid response: '{__req.text}'"}
+                __result = {"result": -1, "text": f"Invalid response: '{__req.text}' "
+                                                  f"for '{__cookie.get("login")}':'{__cookie.get("password")}'"}
+
         return __result
 
 
