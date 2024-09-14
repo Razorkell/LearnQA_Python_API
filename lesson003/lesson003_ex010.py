@@ -7,7 +7,10 @@ class TestPhrase:
         self.__phrase = input("Set a phrase: ")
 
     def set_expected_len(self):
-        self.__expected_len = input("Set an expected len: ")
+        try:
+            self.__expected_len = int(input("Set an expected len: "))
+        except ValueError:
+            print("Expected len should be integer.")
 
     def get_phrase(self):
         return self.__phrase
@@ -17,4 +20,6 @@ class TestPhrase:
 
     def test_phrase_len(self):
         TestPhrase.set_phrase(self)
-        assert len(self.__phrase) < 15, f"The phrase greater or equal than {self.__expected_len}"
+        __phrase_len = len(self.__phrase)
+        __temp_len = self.__expected_len
+        assert __phrase_len < __temp_len, f"The phrase greater or equal than {__temp_len}"
