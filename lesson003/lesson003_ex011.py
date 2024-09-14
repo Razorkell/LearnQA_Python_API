@@ -4,8 +4,8 @@ from lib.base_case import BaseCase
 
 
 class TestValidAnswer(BaseCase):
-    __page_cookies = "https://playground.learnqa.ru/api/homework_cookie"
-    __page_headers = "https://playground.learnqa.ru/api/homework_header"
+    __page_cookie = "https://playground.learnqa.ru/api/homework_cookie"
+    __page_header = "https://playground.learnqa.ru/api/homework_header"
     __url_header = {"user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
                                   "AppleWebKit/537.36 (KHTML, like Gecko) "
                                   "Chrome/128.0.0.0 "
@@ -22,11 +22,23 @@ class TestValidAnswer(BaseCase):
                  -1: "Response doesn't contain this cookie",
                  -2: "Incorrect text in cookie"}
 
-    def set_page(self):
-        self.__page = input("Set a page for request: ")
+    def set_page(self, page_type='Cookies'):
+        __temp_page = input("Set a page for request: ")
+        if page_type == 'Cookies':
+            self.__page_cookie = __temp_page
+        elif page_type == 'Headers':
+            self.__page_header = __temp_page
+        else:
+            print("Invalid page type")
 
-    def get_page(self):
-        return self.__page
+    def get_page(self, page_type='Cookies'):
+        if page_type == 'Cookies':
+            __temp_page = self.__page_cookie
+        elif page_type == 'Headers':
+            __temp_page = self.__page_header
+        else:
+            __temp_page = "Invalid page type"
+        return __temp_page
 
     def set_methods(self):
         self.__methods = input("Enter list of methods separated by comma:").split(",")
@@ -39,7 +51,7 @@ class TestValidAnswer(BaseCase):
 
     @pytest.mark.parametrize('method', __methods)
     def test_request_cookies(self, method):
-        __page = self.__page_cookies
+        __page = self.__page_cookie
         __temp_response = requests.request(method, __page, headers=self.__url_header)
         # print(f"For {method} cookie: '{self.return_cookie(__temp_response)}'")
         __temp_dict = self.__cookies[2]  # 1 - invalid value, 1 - invalid key, 2 - valid key and value
@@ -51,7 +63,7 @@ class TestValidAnswer(BaseCase):
 
     @pytest.mark.parametrize('method', __methods)
     def test_request_headers(self, method):
-        __page = self.__page_headers
+        __page = self.__page_header
         __temp_response = requests.request(method, __page, headers=self.__url_header)
         # print(f"For {method} header: '{self.return_header(__temp_response)}'")
         __temp_dict = self.__headers[2]  # 1 - invalid value, 1 - invalid key, 2 - valid key and value
