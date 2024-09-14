@@ -8,7 +8,9 @@ class TestCookies:
                               "AppleWebKit/537.36 (KHTML, like Gecko) "
                               "Chrome/128.0.0.0 "
                               "Safari/537.36"}
-    __cookies = [{"HomeWork": "hw_value"}]
+    __cookies = [{"HomeWork": "hw_value1"},  # some incorrect cookie for checking test result
+                 {"HomeWork2": "hw_value"},  # some incorrect cookie for checking test result
+                 {"HomeWork": "hw_value"}]  # correct cookie
     __answers = {1: "Valid",
                  0: "Cookies are blank",
                  -1: "Response doesn't contain this cookie",
@@ -34,9 +36,9 @@ class TestCookies:
             __temp_res = 0
             for index, cookie in enumerate(self.__cookies):
                 for key_cookie in cookie:
+                    __result_cookie = __temp_cookie
                     if key_cookie in __temp_cookie:
                         __temp_res = 1
-                        __result_cookie = __temp_cookie
                         if __temp_cookie[key_cookie] == cookie[key_cookie]:
                             __result_code = 1
                             break
