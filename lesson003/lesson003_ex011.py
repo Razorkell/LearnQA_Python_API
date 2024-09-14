@@ -1,4 +1,5 @@
 import requests
+import pytest
 
 
 class TestCookies:
@@ -8,6 +9,7 @@ class TestCookies:
                               "AppleWebKit/537.36 (KHTML, like Gecko) "
                               "Chrome/128.0.0.0 "
                               "Safari/537.36"}
+    __methods = ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'HEAD', 'OPTIONS']
     __cookies = [{"HomeWork": "hw_value1"},  # some incorrect cookie for checking test result
                  {"HomeWork2": "hw_value"},  # some incorrect cookie for checking test result
                  {"HomeWork": "hw_value"}]  # correct cookie
@@ -21,6 +23,12 @@ class TestCookies:
 
     def get_page(self):
         return self.__page
+
+    def set_methods(self):
+        self.__methods = input("Enter list of methods separated by comma:").split(",")
+
+    def get_methods(self):
+        return self.__methods
 
     def get_cookies(self):
         return self.__cookies
@@ -50,37 +58,9 @@ class TestCookies:
                 __result_code = -1
         return __result_code, __result_cookie
 
-    def test_get_cookie(self):
-        __temp_result, __temp_cookie = TestCookies.check_cookie(self, 'GET')
-        assert __temp_result == 1, f"{self.__answers[0]}" if __temp_result == 0 \
-            else f"{self.__answers[__temp_result]}: {__temp_cookie}"
-
-    def test_post_cookie(self):
-        __temp_result, __temp_cookie = TestCookies.check_cookie(self, 'POST')
-        assert __temp_result == 1, f"{self.__answers[0]}" if __temp_result == 0 \
-            else f"{self.__answers[__temp_result]}: {__temp_cookie}"
-
-    def test_put_cookie(self):
-        __temp_result, __temp_cookie = TestCookies.check_cookie(self, 'PUT')
-        assert __temp_result == 1, f"{self.__answers[0]}" if __temp_result == 0 \
-            else f"{self.__answers[__temp_result]}: {__temp_cookie}"
-
-    def test_patch_cookie(self):
-        __temp_result, __temp_cookie = TestCookies.check_cookie(self, 'PATCH')
-        assert __temp_result == 1, f"{self.__answers[0]}" if __temp_result == 0 \
-            else f"{self.__answers[__temp_result]}: {__temp_cookie}"
-
-    def test_delete_cookie(self):
-        __temp_result, __temp_cookie = TestCookies.check_cookie(self, 'DELETE')
-        assert __temp_result == 1, f"{self.__answers[0]}" if __temp_result == 0 \
-            else f"{self.__answers[__temp_result]}: {__temp_cookie}"
-
-    def test_head_cookie(self):
-        __temp_result, __temp_cookie = TestCookies.check_cookie(self, 'HEAD')
-        assert __temp_result == 1, f"{self.__answers[0]}" if __temp_result == 0 \
-            else f"{self.__answers[__temp_result]}: {__temp_cookie}"
-
-    def test_options_cookie(self):
-        __temp_result, __temp_cookie = TestCookies.check_cookie(self, 'OPTIONS')
-        assert __temp_result == 1, f"{self.__answers[0]}" if __temp_result == 0 \
-            else f"{self.__answers[__temp_result]}: {__temp_cookie}"
+    @pytest.mark.parametrize('method', __methods)
+    def test_request_cookie(self, method):
+        __temp_result, __temp_cookie = TestCookies.check_cookie(self, method)
+        print(f"For {method} Cookie: {__temp_cookie}")
+        assert __temp_result == 1, f"{self.__answers[0]} for '{method}'" if __temp_result == 0 \
+            else f"{self.__answers[__temp_result]} for '{method}': {__temp_cookie}"
