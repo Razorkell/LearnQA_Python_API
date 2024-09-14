@@ -22,19 +22,19 @@ class TestValidAnswer(BaseCase):
                  -1: "Response doesn't contain this cookie",
                  -2: "Incorrect text in cookie"}
 
-    def set_page(self, page_type='Cookies'):
+    def set_page(self, page_type='Cookie'):
         __temp_page = input("Set a page for request: ")
-        if page_type == 'Cookies':
+        if page_type == 'Cookie':
             self.__page_cookie = __temp_page
-        elif page_type == 'Headers':
+        elif page_type == 'Header':
             self.__page_header = __temp_page
         else:
             print("Invalid page type")
 
-    def get_page(self, page_type='Cookies'):
-        if page_type == 'Cookies':
+    def get_page(self, page_type='Cookie'):
+        if page_type == 'Cookie':
             __temp_page = self.__page_cookie
-        elif page_type == 'Headers':
+        elif page_type == 'Header':
             __temp_page = self.__page_header
         else:
             __temp_page = "Invalid page type"
