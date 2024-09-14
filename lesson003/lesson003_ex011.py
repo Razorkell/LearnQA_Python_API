@@ -1,18 +1,22 @@
 import requests
 import pytest
+from lib.base_case import BaseCase
 
 
-class TestCookies:
-
-    __page = "https://playground.learnqa.ru/api/homework_cookie"
-    __header = {"user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
-                              "AppleWebKit/537.36 (KHTML, like Gecko) "
-                              "Chrome/128.0.0.0 "
-                              "Safari/537.36"}
+class TestValidAnswer(BaseCase):
+    __page_cookies = "https://playground.learnqa.ru/api/homework_cookie"
+    __page_headers = "https://playground.learnqa.ru/api/homework_header"
+    __url_header = {"user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+                                  "AppleWebKit/537.36 (KHTML, like Gecko) "
+                                  "Chrome/128.0.0.0 "
+                                  "Safari/537.36"}
     __methods = ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'HEAD', 'OPTIONS']
     __cookies = [{"HomeWork": "hw_value1"},  # some incorrect cookie for checking test result
                  {"HomeWork2": "hw_value"},  # some incorrect cookie for checking test result
                  {"HomeWork": "hw_value"}]  # correct cookie
+    __headers = [{"x-secret-homework-header": "Some secret"},  # some incorrect header for checking test result
+                 {"secret-homework-header": "Some secret value"},  # some incorrect header for checking test result
+                 {"x-secret-homework-header": "Some secret value"}]  # correct header
     __answers = {1: "Valid",
                  0: "Cookies are blank",
                  -1: "Response doesn't contain this cookie",
@@ -33,34 +37,26 @@ class TestCookies:
     def get_cookies(self):
         return self.__cookies
 
-    def __check_cookie(self, method):
-        __temp_response = requests.request(method, self.__page, headers=self.__header)
-        __temp_cookie = __temp_response.cookies
-        __result_code = -200
-        __result_cookie = []
-        if __temp_cookie is None:
-            __result_code = 0
-        else:
-            __temp_res = 0
-            for index, cookie in enumerate(self.__cookies):
-                for key_cookie in cookie:
-                    __result_cookie = __temp_cookie
-                    if key_cookie in __temp_cookie:
-                        __temp_res = 1
-                        if __temp_cookie[key_cookie] == cookie[key_cookie]:
-                            __result_code = 1
-                            break
-                        else:
-                            __result_code = -2
-                if __result_code == 1:
-                    break
-            if __temp_res == 0:
-                __result_code = -1
-        return __result_code, __result_cookie
+    @pytest.mark.parametrize('method', __methods)
+    def test_request_cookies(self, method):
+        __page = self.__page_cookies
+        __temp_response = requests.request(method, __page, headers=self.__url_header)
+        # print(f"For {method} cookie: '{self.return_cookie(__temp_response)}'")
+        __temp_dict = self.__cookies[2]  # 1 - invalid value, 1 - invalid key, 2 - valid key and value
+        for key in __temp_dict:
+            __temp_value = self.get_cookie(__temp_response, key)
+            assert __temp_value == __temp_dict[key], (f"Incorrect text in cookie. "
+                                                      f"Expected cookie text is '{__temp_dict[key]}', "
+                                                      f"actual cookie text is '{__temp_value}'")
 
     @pytest.mark.parametrize('method', __methods)
-    def test_request_cookie(self, method):
-        __temp_result, __temp_cookie = TestCookies.__check_cookie(self, method)
-        print(f"For {method} Cookie: {__temp_cookie}")
-        assert __temp_result == 1, f"{self.__answers[0]} for '{method}'" if __temp_result == 0 \
-            else f"{self.__answers[__temp_result]} for '{method}': {__temp_cookie}"
+    def test_request_headers(self, method):
+        __page = self.__page_headers
+        __temp_response = requests.request(method, __page, headers=self.__url_header)
+        # print(f"For {method} header: '{self.return_header(__temp_response)}'")
+        __temp_dict = self.__headers[2]  # 1 - invalid value, 1 - invalid key, 2 - valid key and value
+        for key in __temp_dict:
+            __temp_value = self.get_header(__temp_response, key)
+            assert __temp_value == __temp_dict[key], (f"Incorrect text in header. "
+                                                      f"Expected header text is '{__temp_dict[key]}', "
+                                                      f"actual header text is '{__temp_value}'")
