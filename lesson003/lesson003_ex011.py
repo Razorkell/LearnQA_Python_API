@@ -33,7 +33,7 @@ class TestCookies:
     def get_cookies(self):
         return self.__cookies
 
-    def check_cookie(self, method):
+    def __check_cookie(self, method):
         __temp_response = requests.request(method, self.__page, headers=self.__header)
         __temp_cookie = __temp_response.cookies
         __result_code = -200
@@ -60,7 +60,7 @@ class TestCookies:
 
     @pytest.mark.parametrize('method', __methods)
     def test_request_cookie(self, method):
-        __temp_result, __temp_cookie = TestCookies.check_cookie(self, method)
+        __temp_result, __temp_cookie = TestCookies.__check_cookie(self, method)
         print(f"For {method} Cookie: {__temp_cookie}")
         assert __temp_result == 1, f"{self.__answers[0]} for '{method}'" if __temp_result == 0 \
             else f"{self.__answers[__temp_result]} for '{method}': {__temp_cookie}"
