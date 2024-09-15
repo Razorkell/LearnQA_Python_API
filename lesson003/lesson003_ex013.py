@@ -59,8 +59,8 @@ class TestValidUserAgent(BaseCase):
                 __list['browser'] and
                 __list['device']), (f'User agent: {__user_agent_resp}. ' +
                                     (f'{"platform is incorrect: [Exp: "}{__platform_temp}{". "}'
-                                     f'{"Act: "}{__platform_resp}{"]. "}' if not __list['platform'] else f''
+                                     f'{"Act: "}{__platform_resp}{"], "}' if not __list['platform'] else f''
                                      f'{"browser is incorrect: [Exp: "}{__browser_temp}{". "}'
-                                     f'{"Act: "}{__browser_resp}{"]. "}' if not __list['browser'] else f''
+                                     f'{"Act: "}{__browser_resp}{"], "}' if not __list['browser'] else f''
                                      f'{"device is incorrect: [Exp: "}{__device_temp}{". "}'
-                                     f'{"Act: "}{__device_resp}{"]. "}' if not __list['device'] else f''))
+                                     f'{"Act: "}{__device_resp}{"], "}' if not __list['device'] else f''))
