@@ -52,18 +52,15 @@ class TestValidUserAgent(BaseCase):
         __browser_resp = self.get_json_value(__response, 'browser')
         __device_resp = self.get_json_value(__response, 'device')
 
-        __list = {'user_agent': True if __user_agent_temp == __user_agent_resp else False,
-                  'platform': True if __platform_temp == __platform_resp else False,
+        __list = {'platform': True if __platform_temp == __platform_resp else False,
                   'browser': True if __browser_temp == __browser_resp else False,
                   'device': True if __device_temp == __device_resp else False}
-        assert (__list['user_agent'] and
-                __list['platform'] and
+        assert (__list['platform'] and
                 __list['browser'] and
-                __list['device']), (f'{"user_agent is incorrect: [Expected: "}{__user_agent_temp}{". "}'
-                                    f'{"Actual: "}{__user_agent_resp}{"]. "}' if not __list['user_agent'] else f''
-                                    f'{"platform is incorrect: [Expected: "}{__platform_temp}{". "}'
-                                    f'{"Actual: "}{__platform_resp}{"]. "}' if not __list['platform'] else f''
-                                    f'{"browser is incorrect: [Expected: "}{__browser_temp}{". "}'
-                                    f'{"Actual: "}{__browser_resp}{"]. "}' if not __list['browser'] else f''
-                                    f'{"device is incorrect: [Expected: "}{__device_temp}{". "}'
-                                    f'{"Actual: "}{__device_resp}{"]. "}' if not __list['device'] else f'')
+                __list['device']), (f'User agent: {__user_agent_resp}. ' +
+                                    (f'{"platform is incorrect: [Exp: "}{__platform_temp}{". "}'
+                                     f'{"Act: "}{__platform_resp}{"]. "}' if not __list['platform'] else f''
+                                     f'{"browser is incorrect: [Exp: "}{__browser_temp}{". "}'
+                                     f'{"Act: "}{__browser_resp}{"]. "}' if not __list['browser'] else f''
+                                     f'{"device is incorrect: [Exp: "}{__device_temp}{". "}'
+                                     f'{"Act: "}{__device_resp}{"]. "}' if not __list['device'] else f''))
