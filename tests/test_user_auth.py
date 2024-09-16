@@ -7,8 +7,8 @@ from lib.assertions import Assertions
 class TestUserAuth(BaseCase):
 
     exclude_params = [
-        ("no_cookie"),
-        ("no_token")
+        "no_cookie",
+        "no_token"
     ]
 
     @pytest.fixture(autouse=True)
@@ -61,5 +61,4 @@ class TestUserAuth(BaseCase):
             "user_id",
             0,
             f"User is authorized with condition {condition}"
-
         )
