@@ -31,18 +31,22 @@ class BaseCase:
         __expected_values_temp = ""
         __list_temp = []
         __text = get(url).text.split('\n')
-        assert __text, "The agent list from page is blank"
+        __flag_user_agent = False
+        assert __text, "User agent list from page is blank"
         for num_string, string in enumerate(__text):
             if string == '':
                 del __text[num_string]
         for num_string, string in enumerate(__text):
             if string == 'User Agent:':
                 __user_agent_temp = __text[num_string + 1]
-            elif string == 'Expected values:':
+                __flag_user_agent = True
+            elif string == 'Expected values:' and __flag_user_agent is True:
                 __temp_string = '{' + __text[num_string + 1].replace('\'', '\"') + '}'
                 try:
                     __expected_values_temp = json.loads(__temp_string)
                 except json.JSONDecodeError:
                     assert False, "Invalid json for expected value"
                 __list_temp.append({'user_agent': __user_agent_temp, 'expected_values': __expected_values_temp})
+                __flag_user_agent = False
+        assert __list_temp, "User agent list in incorrect format or blank"
         return __list_temp
