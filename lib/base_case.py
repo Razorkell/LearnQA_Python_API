@@ -1,4 +1,6 @@
 import json
+import random
+import string
 from requests import Response, get
 from datetime import datetime
 
@@ -26,17 +28,25 @@ class BaseCase:
         assert json_name in __response_as_dict, f"Response JSON doesn't have key '{json_name}'"
         return __response_as_dict[json_name]
 
-    def prepare_registration_data(self, email=None):
+    def prepare_registration_data(self, username=None, password=None, first_name=None, last_name=None, email=None):
+        if username is None:
+            username = 'learnqa'
+        if password is None:
+            password = '123'
+        if first_name is None:
+            first_name = 'learnqa'
+        if last_name is None:
+            last_name = 'learnqa'
         if email is None:
             __base_part = 'learnqa'
             __domain = 'example.com'
             __random_part = datetime.now().strftime("%m%d%Y%H%M%S")
             email = f"{__base_part}{__random_part}@{__domain}"
         return {
-            'password': '123',
-            'username': 'learnqa',
-            'firstName': 'learnqa',
-            'lastName': 'learnqa',
+            'username': username,
+            'password': password,
+            'firstName': first_name,
+            'lastName': last_name,
             'email': email
         }
 
@@ -65,3 +75,8 @@ class BaseCase:
                 __flag_user_agent = False
         assert __list_temp, "User agent list in incorrect format or blank"
         return __list_temp
+
+    @staticmethod
+    def random_string(length):
+        __res = ''.join(random.choices(string.ascii_letters, k=length))
+        return __res
