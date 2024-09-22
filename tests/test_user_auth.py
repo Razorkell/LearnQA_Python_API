@@ -1,9 +1,11 @@
+import allure
 import pytest
-import requests
 from lib.base_case import BaseCase
 from lib.assertions import Assertions
+from lib.my_requests import MyRequests
 
 
+@allure.epic("Authorization cases")
 class TestUserAuth(BaseCase):
 
     exclude_params = [
@@ -18,18 +20,17 @@ class TestUserAuth(BaseCase):
             'email': 'vinkotov@example.com',
             'password': '1234'
         }
-        url1 = "https://playground.learnqa.ru/api/user/login"
-        response1 = requests.post(url1, data=data)
+        response1 = MyRequests.post(url="/user/login", data=data)
 
         self.auth_sid = self.get_cookie(response1, "auth_sid")
         self.token = self.get_header(response1, "x-csrf-token")
         self.user_id_from_auth_method = self.get_json_value(response1, "user_id")
 
+    @allure.description("This is successfully authorize user by email and password")
     def test_auth_user(self):
 
-        url2 = "https://playground.learnqa.ru/api/user/auth"
-        response2 = requests.get(
-            url2,
+        response2 = MyRequests.get(
+            url="/user/auth",
             headers={"x-csrf-token": self.token},
             cookies={"auth_sid": self.auth_sid}
         )
@@ -41,18 +42,18 @@ class TestUserAuth(BaseCase):
             "User id auth method isn't equal to user id from check method"
         )
 
+    @allure.description("This test checks authorization status w/o sending auth cookie or token")
     @pytest.mark.parametrize('condition', exclude_params)
     def test_negative_auth_check(self, condition):
 
-        url2 = "https://playground.learnqa.ru/api/user/auth"
         if condition == "no_cookie":
-            response2 = requests.get(
-                url2,
+            response2 = MyRequests.get(
+                url="/user/auth",
                 headers={"x-csrf-token": self.token}
             )
         else:
-            response2 = requests.get(
-                url2,
+            response2 = MyRequests.get(
+                url="/user/auth",
                 cookies={"auth_sid": self.auth_sid}
             )
 

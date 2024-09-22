@@ -1,5 +1,6 @@
 import json
 from requests import Response, get
+from datetime import datetime
 
 
 class BaseCase:
@@ -24,6 +25,20 @@ class BaseCase:
             assert False, f"Response have not JSON format. Response text is '{response.text}'"
         assert json_name in __response_as_dict, f"Response JSON doesn't have key '{json_name}'"
         return __response_as_dict[json_name]
+
+    def prepare_registration_data(self, email=None):
+        if email is None:
+            __base_part = 'learnqa'
+            __domain = 'example.com'
+            __random_part = datetime.now().strftime("%m%d%Y%H%M%S")
+            email = f"{__base_part}{__random_part}@{__domain}"
+        return {
+            'password': '123',
+            'username': 'learnqa',
+            'firstName': 'learnqa',
+            'lastName': 'learnqa',
+            'email': email
+        }
 
     @staticmethod
     def set_agent_list_values_from_page(url):
