@@ -12,6 +12,7 @@ class TestUserEdit(BaseCase):
     url_user_login = url_user + "login"
 
     edited_fields = ['password', 'username', 'firstName', 'lastName', 'email']
+    expected_auth_fields = ['username', 'firstName', 'lastName', 'email']
 
     @pytest.fixture
     def user_creation(self):
@@ -35,29 +36,30 @@ class TestUserEdit(BaseCase):
             'email': user_creation['email'],
             'password': user_creation['password']
         }
-
         response_login = MyRequests.post(url=self.url_user_login, data=login_data)
-
         auth_sid = self.get_cookie(response_login, "auth_sid")
         token = self.get_header(response_login, "x-csrf-token")
-        yield {'auth_sid': auth_sid, 'token': token}
+        user_creation['auth_sid'] = auth_sid
+        user_creation['token'] = token
+        yield user_creation
 
     def user_login(self, data):
         login_data = {
             'email': data['email'],
             'password': data['password']
         }
-
         response_login = MyRequests.post(url=self.url_user_login, data=login_data)
-
         auth_sid = self.get_cookie(response_login, "auth_sid")
         token = self.get_header(response_login, "x-csrf-token")
-        return {'auth_sid': auth_sid, 'token': token}
-
+        login_auth = {
+            'auth_sid': auth_sid,
+            'token': token
+        }
+        return login_auth
 
     @allure.description("This test checks changing firstName of user")
-    def test_edit_just_created_user(self, user_creation, created_user_login):
-        user_id = user_creation['id']
+    def test_edit_just_created_user(self, created_user_login):
+        user_id = created_user_login['id']
         auth_sid = created_user_login['auth_sid']
         token = created_user_login['token']
 
@@ -89,13 +91,13 @@ class TestUserEdit(BaseCase):
 
     @allure.description("This test checks changing details of user by not authorized user")
     @pytest.mark.parametrize('field', edited_fields)
-    def test_edit_by_not_authorized(self, field, user_creation, created_user_login):
-        user_id = user_creation['id']
+    def test_edit_by_not_authorized(self, field, created_user_login):
+        user_id = created_user_login['id']
         auth_sid = created_user_login['auth_sid']
         token = created_user_login['token']
 
         # Edit
-        old_value = user_creation[field]
+        old_value = created_user_login[field]
         new_value = f"new_{field}"
         if field == 'email':
             new_value = f"{new_value}@example.com"
@@ -120,7 +122,7 @@ class TestUserEdit(BaseCase):
         if field == 'password':
             # check login by old password
             login_data_old = {
-                'email': user_creation['email'],
+                'email': created_user_login['email'],
                 'password': old_value
             }
             login_old = self.user_login(login_data_old)
@@ -132,14 +134,11 @@ class TestUserEdit(BaseCase):
                 cookies={"auth_sid": auth_sid_old}
             )
             Assertions.assert_code_status(response_details_old, 200)
-            Assertions.assert_json_has_key(response_details_old, "username")
-            Assertions.assert_json_has_key(response_details_old, "email")
-            Assertions.assert_json_has_key(response_details_old, "firstName")
-            Assertions.assert_json_has_key(response_details_old, "lastName")
+            Assertions.assert_json_has_keys(response_details_old, self.expected_auth_fields)
 
             # check login by new password
             login_data_new = {
-                'email': user_creation['email'],
+                'email': created_user_login['email'],
                 'password': new_value
             }
             login_new = MyRequests.post(url=self.url_user_login, data=login_data_new)
@@ -155,4 +154,4 @@ class TestUserEdit(BaseCase):
 
 
 
-        # assert 1 == 1, f"2"
+        # assert 1 != 1, f"2"
