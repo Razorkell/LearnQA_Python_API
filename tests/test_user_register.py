@@ -40,7 +40,8 @@ class TestUserRegister(BaseCase):
         response = MyRequests.post(url=self.url_user, data=data)
 
         Assertions.assert_code_status(response, 400)
-        assert response.content.decode("utf-8") == f"Invalid email format"
+        assert response.content.decode("utf-8") == f"Invalid email format", \
+            f"Registration should be failed with invalid email"
 
     @allure.description("This test checks invalid registration of user without any required field")
     @pytest.mark.parametrize('field', required_fields)

@@ -40,7 +40,7 @@ class BaseCase:
         if email is None:
             __base_part = 'learnqa'
             __domain = 'example.com'
-            __random_part = datetime.now().strftime("%m%d%Y%H%M%S")
+            __random_part = datetime.now().strftime("%m%d%Y%H%M%S%f") + '_' + str(random.randrange(0, 100, 1))
             email = f"{__base_part}{__random_part}@{__domain}"
         return {
             'username': username,
