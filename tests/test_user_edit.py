@@ -201,7 +201,7 @@ class TestUserEdit(BaseCase):
             data={field: new_value}
         )
         Assertions.assert_code_status(response_edit, 400)
-        Assertions.assert_json_has_key(response_edit,'error')
+        Assertions.assert_json_has_key(response_edit, 'error')
         Assertions.assert_json_value_by_name(
             response_edit,
             'error',

@@ -156,7 +156,7 @@ class TestUserDelete(BaseCase):
             cookies={"auth_sid": auth_sid_user1}
         )
         Assertions.assert_code_status(response_delete, 400)
-        Assertions.assert_json_has_key(response_delete,'error')
+        Assertions.assert_json_has_key(response_delete, 'error')
         Assertions.assert_json_value_by_name(
             response_delete,
             'error',
