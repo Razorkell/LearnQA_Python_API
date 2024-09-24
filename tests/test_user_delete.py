@@ -130,7 +130,7 @@ class TestUserDelete(BaseCase):
         Assertions.assert_code_status(response_details, 404)
         assert response_details.text == "User not found", f"Unexpected answer for not founded user"
 
-    @allure.description("This test checks deletion of user2 by user1. Result: deletion of user1")
+    @allure.description("This test checks deletion of user2 by user1. Result: not deleted users")
     def test_delete_by_different_users(self, fix_user_login):
         # user1 details
         details_user1 = fix_user_login
@@ -155,7 +155,13 @@ class TestUserDelete(BaseCase):
             headers={"x-csrf-token": token_user1},
             cookies={"auth_sid": auth_sid_user1}
         )
-        Assertions.assert_code_status(response_delete, 200)
+        Assertions.assert_code_status(response_delete, 400)
+        Assertions.assert_json_has_key(response_delete,'error')
+        Assertions.assert_json_value_by_name(
+            response_delete,
+            'error',
+            'This user can only delete their own account.',
+            f"Unexpected answer for delete details by another user.")
 
         # Get details user1
         response_details_user1 = MyRequests.get(
@@ -163,8 +169,8 @@ class TestUserDelete(BaseCase):
             headers={"x-csrf-token": token_user1},
             cookies={"auth_sid": auth_sid_user1}
         )
-        Assertions.assert_code_status(response_details_user1, 404)
-        assert response_details_user1.text == "User not found", f"Unexpected answer for not founded user"
+        Assertions.assert_code_status(response_details_user1, 200)
+        Assertions.assert_json_has_keys(response_details_user1, self.expected_auth_fields)
 
         # Get details user2
         response_details_user2 = MyRequests.get(

@@ -167,7 +167,7 @@ class TestUserEdit(BaseCase):
                 f"{field} shouldn't be edited. Old_value: {old_value}, New_value: {new_value}."
             )
 
-    @allure.description("This test checks changing details of user2 by user1. Result: changing details of user1")
+    @allure.description("This test checks changing details of user2 by user1. Result: not changing details")
     @pytest.mark.parametrize('field', edited_fields)
     def test_edit_by_different_users(self, field, fix_user_login):
         # user1 details
@@ -200,7 +200,13 @@ class TestUserEdit(BaseCase):
             cookies={"auth_sid": auth_sid_user1},
             data={field: new_value}
         )
-        Assertions.assert_code_status(response_edit, 200)
+        Assertions.assert_code_status(response_edit, 400)
+        Assertions.assert_json_has_key(response_edit,'error')
+        Assertions.assert_json_value_by_name(
+            response_edit,
+            'error',
+            'This user can only edit their own data.',
+            f"Unexpected answer for edit details by another user.")
 
         # Get details
         response_details_user1 = MyRequests.get(
@@ -220,25 +226,16 @@ class TestUserEdit(BaseCase):
                 'email': details_user1['email'],
                 'password': details_user1['password']
             }
-            login_old_user1 = MyRequests.post(url=self.url_user_login, data=login_data_old_user1)
-            assert 'auth_sid' not in login_old_user1, f"Answer shouldn't have auth_sid with old password"
-            assert 'x-csrf-token' not in login_old_user1, f"Answer shouldn't have token with old password"
-
-            # check user1 login with new password
-            login_data_new_user1 = {
-                'email': details_user1['email'],
-                'password': new_value
-            }
-            login_new_user1 = self.user_login(login_data_new_user1)
-            auth_sid_new_user1 = login_new_user1['auth_sid']
-            token_new_user1 = login_new_user1['token']
-            response_details_new_user1 = MyRequests.get(
+            login_old_user1 = self.user_login(login_data_old_user1)
+            auth_sid_old_user1 = login_old_user1['auth_sid']
+            token_old_user1 = login_old_user1['token']
+            response_details_old_user1 = MyRequests.get(
                 f"{self.url_user}{userid_user1}",
-                headers={"x-csrf-token": token_new_user1},
-                cookies={"auth_sid": auth_sid_new_user1}
+                headers={"x-csrf-token": token_old_user1},
+                cookies={"auth_sid": auth_sid_old_user1}
             )
-            Assertions.assert_code_status(response_details_new_user1, 200)
-            Assertions.assert_json_has_keys(response_details_new_user1, self.expected_auth_fields)
+            Assertions.assert_code_status(response_details_old_user1, 200)
+            Assertions.assert_json_has_keys(response_details_old_user1, self.expected_auth_fields)
 
             # check user2 login with old password
             login_old_user2 = self.user_login(data_user2)
@@ -253,11 +250,11 @@ class TestUserEdit(BaseCase):
             Assertions.assert_json_has_keys(response_details_old_user2, self.expected_auth_fields)
 
         else:
-            # user1 should be changed
+            # user1 shouldn't be changed
             Assertions.assert_json_value_by_name(
                 response_details_user1,
                 field,
-                new_value,
+                old_value_user1,
                 f"{field} of user1 should be edited. Old_value: {old_value_user1}, New_value: {new_value}."
             )
             # user2 shouldn't be changed
